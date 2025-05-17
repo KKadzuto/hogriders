@@ -1,7 +1,7 @@
 --only-binary :all:
 --index-url https://pypi.org/simple
 --extra-index-url https://download.pytorch.org/whl/cpu
-Flask==3.0.2
+Flask==2.3.3
 Flask-WTF==1.2.1
 python-dotenv==1.0.0
 Pillow==10.2.0
@@ -11,5 +11,6 @@ rwkv==0.8.0
 requests==2.31.0
 tqdm==4.66.1
 opencv-python==4.9.0.80
-numpy==2.1.1
-torch==2.2.1 
+numpy==2.2.1
+torch==2.7.0 
+pybind11==2.13.6
