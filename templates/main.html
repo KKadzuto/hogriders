@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анонимайзер - Защита конфиденциальных данных</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="/static/logo.webp" alt="Logo" class="logo">
+            <span>Анонимайзер</span>
+        </div>
+        <div class="nav-menu">
+            <a href="/chat" class="menu-button">
+                <i class="fas fa-comments"></i>
+                Чат
+            </a>
+            <div class="dropdown">
+                <button class="menu-button">
+                    <i class="fas fa-cog"></i>
+                    Настройки
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#" class="dropdown-item" onclick="toggleTheme()">
+                        <i class="fas fa-moon"></i>
+                        Тема
+                    </a>
+                    <a href="#" class="dropdown-item" onclick="toggleLanguage()">
+                        <i class="fas fa-language"></i>
+                        Язык
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <!-- Герой-секция -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1>Защитите вашу конфиденциальность</h1>
+                <p>Анонимайзер - это мощный инструмент для защиты персональных данных в текстах и изображениях</p>
+                <a href="/chat" class="cta-button">
+                    <i class="fas fa-arrow-right"></i>
+                    Начать работу
+                </a>
+            </div>
+        </section>
+
+        <!-- Возможности -->
+        <section class="features-section">
+            <h2>Возможности сервиса</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Анонимизация текста</h3>
+                    <p>Защита персональных данных с сохранением структуры текста</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>Обработка файлов</h3>
+                    <p>Работа с текстовыми файлами и изображениями</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-lock"></i>
+                    <h3>Безопасность</h3>
+                    <p>Локальная обработка и безопасное хранение данных</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-history"></i>
+                    <h3>История чатов</h3>
+                    <p>История чатов а также информация в нем не сохраняется</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Как это работает -->
+        <section class="how-it-works">
+            <h2>Как это работает</h2>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Введите текст</h3>
+                    <p>Напишите текст или загрузите файл для обработки</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Обработка</h3>
+                    <p>Наш алгоритм находит и анонимизирует персональные данные</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Результат</h3>
+                    <p>Получите безопасный текст с сохранением структуры</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Преимущества -->
+        <section class="benefits-section">
+            <h2>Почему выбирают нас</h2>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Быстрая обработка</h3>
+                    <p>Мгновенная анонимизация текста любой длины</p>
+                </div>
+                <div class="benefit-card">
+                    <i class="fas fa-user-shield"></i>
+                    <h3>Конфиденциальность</h3>
+                    <p>Гарантированная защита ваших данных</p>
+                </div>
+                <div class="benefit-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Удобство</h3>
+                    <p>Простой и понятный интерфейс</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Призыв к действию -->
+        <section class="cta-section">
+            <h2>Готовы начать?</h2>
+            <p>Присоединяйтесь к тысячам пользователей, которые уже защищают свои данные</p>
+            <a href="/chat" class="cta-button">
+                <i class="fas fa-arrow-right"></i>
+                Начать сейчас
+            </a>
+        </section>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            showNotification(isLight ? 'Включена светлая тема' : 'Включена темная тема');
+        }
+
+        function toggleLanguage() {
+            showNotification('Смена языка будет доступна в следующем обновлении');
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Загружаем сохраненную тему
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+            }
+        });
+    </script>
+</body>
+</html> 

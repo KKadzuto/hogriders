@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат - Анонимайзер</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="/static/logo.webp" alt="Logo" class="logo">
+            <span>Анонимайзер</span>
+        </div>
+        <div class="nav-menu">
+            <a href="/" class="menu-button">
+                <i class="fas fa-home"></i>
+                Главная
+            </a>
+            <div class="dropdown">
+                <button class="menu-button">
+                    <i class="fas fa-cog"></i>
+                    Настройки
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#" class="dropdown-item" onclick="toggleTheme()">
+                        <i class="fas fa-moon"></i>
+                        Тема
+                    </a>
+                    <a href="#" class="dropdown-item" onclick="toggleLanguage()">
+                        <i class="fas fa-language"></i>
+                        Язык
+                    </a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="menu-button">
+                    <i class="fas fa-shield-alt"></i>
+                    Безопасность
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    <div class="dropdown-item">
+                        <i class="fas fa-laptop"></i>
+                        Локальная обработка
+                    </div>
+                    <div class="dropdown-item">
+                        <i class="fas fa-bolt"></i>
+                        Быстрый анализ
+                    </div>
+                    <div class="dropdown-item">
+                        <i class="fas fa-lock"></i>
+                        Без облака
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="chat-container">
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot">
+                <div class="message-content">
+                    <h3>Добро пожаловать в Анонимайзер!</h3>
+                    <p>Я помогу вам защитить конфиденциальные данные в ваших текстах и файлах.</p>
+                    <h4>Что я умею:</h4>
+                    <ul>
+                        <li>Анонимизировать персональные данные (ФИО, телефоны, email)</li>
+                        <li>Обрабатывать текстовые файлы (.txt, .docx)</li>
+                        <li>Размывать лица на фотографиях</li>
+                        <li>Защищать конфиденциальную информацию</li>
+                    </ul>
+                    <h4>Как я работаю:</h4>
+                    <p>Наш ИИ работает полностью локально на вашем устройстве:</p>
+                    <ul>
+                        <li>Все данные обрабатываются только на вашем компьютере</li>
+                        <li>Никакая информация не отправляется в облако</li>
+                        <li>Мгновенный анализ и обработка данных</li>
+                        <li>Максимальная конфиденциальность и безопасность</li>
+                    </ul>
+                    <p>Просто напишите текст или загрузите файл, и я помогу сделать его безопасным.</p>
+                </div>
+                <div class="message-time">Сейчас</div>
+            </div>
+        </div>
+        <div class="chat-input">
+            <div class="file-upload">
+                <input type="file" id="file-input" accept=".txt,.doc,.docx,.pdf,.jpg,.jpeg,.png">
+                <label for="file-input">
+                    <i class="fas fa-paperclip"></i>
+                </label>
+            </div>
+            <textarea id="message-input" placeholder="Введите сообщение..." rows="1"></textarea>
+            <button id="send-button" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Функция для отправки сообщения
+        function sendMessage() {
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
+            
+            if (message) {
+                addMessage(message, 'user');
+                messageInput.value = '';
+                processMessage(message);
+            }
+        }
+
+        // Функция для добавления сообщения в чат
+        function addMessage(text, sender, downloadUrl = null, filename = null) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            if (text) {
+                const textDiv = document.createElement('div');
+                textDiv.textContent = text;
+                contentDiv.appendChild(textDiv);
+            }
+            
+            if (downloadUrl) {
+                const downloadButton = document.createElement('a');
+                downloadButton.href = downloadUrl;
+                downloadButton.className = 'download-button';
+                downloadButton.innerHTML = '<i class="fas fa-download"></i> Скачать файл';
+                downloadButton.download = filename || 'file';
+                downloadButton.target = '_blank';
+                contentDiv.appendChild(downloadButton);
+            }
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = new Date().toLocaleTimeString();
+            
+            messageDiv.appendChild(contentDiv);
+            messageDiv.appendChild(timeDiv);
+            chatMessages.appendChild(messageDiv);
+            
+            // Прокрутка к последнему сообщению
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Функция для обработки сообщения
+        function processMessage(message) {
+            // Показываем индикатор загрузки
+            const loadingMessage = 'Обработка сообщения...';
+            addMessage(loadingMessage, 'bot');
+            
+            // Отправляем сообщение на сервер
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Удаляем сообщение о загрузке
+                const chatMessages = document.getElementById('chat-messages');
+                chatMessages.removeChild(chatMessages.lastChild);
+                
+                if (data.success) {
+                    // Показываем результат
+                    addMessage(data.result, 'bot');
+                    // Показываем пояснение
+                    addMessage(data.explanation, 'bot');
+                } else {
+                    addMessage('Произошла ошибка при обработке сообщения', 'bot');
+                }
+            })
+            .catch(error => {
+                // Удаляем сообщение о загрузке
+                const chatMessages = document.getElementById('chat-messages');
+                chatMessages.removeChild(chatMessages.lastChild);
+                
+                addMessage('Произошла ошибка при отправке сообщения', 'bot');
+                console.error('Error:', error);
+            });
+        }
+
+        // Обработка нажатия Enter
+        document.getElementById('message-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Автоматическое изменение высоты текстового поля
+        document.getElementById('message-input').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Обработка загрузки файла
+        document.getElementById('file-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                // Показываем сообщение о загрузке
+                addMessage(`Загружен файл: ${file.name}`, 'user');
+                addMessage('Обработка файла...', 'bot');
+                
+                // Отправляем файл на сервер
+                fetch('/anonymize', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Удаляем сообщение о загрузке
+                    const chatMessages = document.getElementById('chat-messages');
+                    chatMessages.removeChild(chatMessages.lastChild);
+                    
+                    if (data.result) {
+                        if (data.result.startsWith('/download/')) {
+                            // Если это изображение, показываем его
+                            const img = document.createElement('img');
+                            img.src = data.result;
+                            img.style.maxWidth = '100%';
+                            img.style.marginTop = '10px';
+                            
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = 'message bot';
+                            messageDiv.appendChild(img);
+                            
+                            const downloadButton = document.createElement('a');
+                            downloadButton.href = data.download_url;
+                            downloadButton.className = 'download-button';
+                            downloadButton.innerHTML = '<i class="fas fa-download"></i> Скачать изображение';
+                            downloadButton.download = data.filename;
+                            downloadButton.target = '_blank';
+                            messageDiv.appendChild(downloadButton);
+                            
+                            chatMessages.appendChild(messageDiv);
+                            
+                            if (data.text) {
+                                addMessage(data.text, 'bot', data.download_url, data.filename);
+                            }
+                        } else {
+                            // Если это текст, показываем его с кнопкой скачивания
+                            addMessage(data.result, 'bot', data.download_url, data.filename);
+                        }
+                        addMessage('Файл успешно обработан. Все персональные данные заменены на безопасные идентификаторы.', 'bot');
+                    } else if (data.error) {
+                        addMessage(`Ошибка: ${data.error}`, 'bot');
+                    } else {
+                        addMessage('Произошла ошибка при обработке файла', 'bot');
+                    }
+                })
+                .catch(error => {
+                    // Удаляем сообщение о загрузке
+                    const chatMessages = document.getElementById('chat-messages');
+                    chatMessages.removeChild(chatMessages.lastChild);
+                    
+                    addMessage('Произошла ошибка при отправке файла', 'bot');
+                    console.error('Error:', error);
+                });
+            }
+        });
+
+        // Функция для переключения темы
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            showNotification(isLight ? 'Включена светлая тема' : 'Включена темная тема');
+        }
+
+        // Функция для переключения языка
+        function toggleLanguage() {
+            showNotification('Смена языка будет доступна в следующем обновлении');
+        }
+
+        // Функция для показа уведомлений
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Загрузка сохраненной темы
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+            }
+        });
+    </script>
+</body>
+</html> 
